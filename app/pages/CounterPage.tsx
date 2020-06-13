@@ -12,6 +12,7 @@ const IncrementAsync = (counter: number, setCounter: Function) => {
     }, 1000);
   };
 };
+
 export default function CounterPage() {
   const [counter, setCounter] = useState(0);
   return (
