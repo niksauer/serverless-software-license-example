@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './Counter.scss';
 import routes from '../constants/routes.json';
 
@@ -24,7 +25,7 @@ export default function Counter(props: Props) {
     <div>
       <div className={styles.backButton} data-tid="backButton">
         <Link to={routes.HOME}>
-          <i className="fa fa-arrow-left fa-3x" />
+          <FontAwesomeIcon icon="arrow-left" size="3x" />
         </Link>
       </div>
       <div className={`counter ${styles.counter}`} data-tid="counter">
@@ -37,7 +38,7 @@ export default function Counter(props: Props) {
           data-tclass="btn"
           type="button"
         >
-          <i className="fa fa-plus" />
+          <FontAwesomeIcon icon="plus" />
         </button>
         <button
           className={styles.btn}
@@ -45,7 +46,7 @@ export default function Counter(props: Props) {
           data-tclass="btn"
           type="button"
         >
-          <i className="fa fa-minus" />
+          <FontAwesomeIcon icon="minus" />
         </button>
         <button
           className={styles.btn}
