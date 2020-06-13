@@ -1,25 +1,18 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
-import routes from './constants/routes.json';
-import CounterPage from './pages/CounterPage';
-import HomePage from './pages/HomePage';
-import HotRouter from './utils/HotRouter';
+import { hot } from 'react-hot-loader/root';
+import { BrowserRouter as Router } from 'react-router-dom';
+import Routes from './Routes';
 
-const App: React.FC = () => {
-  return (
-    <HotRouter>
-      <Providers>
-        <Switch>
-          <Route path={routes.COUNTER} component={CounterPage} />
-          <Route path={routes.HOME} component={HomePage} />
-        </Switch>
-      </Providers>
-    </HotRouter>
-  );
-};
+const App = () => (
+  <Router>
+    <Providers>
+      <Routes />
+    </Providers>
+  </Router>
+);
 
 const Providers: React.FC = ({ children }) => {
   return <>{children}</>;
 };
 
-export default App;
+export default hot(App);
