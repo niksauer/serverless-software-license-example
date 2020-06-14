@@ -22,7 +22,7 @@ export default function Counter(props: Props) {
   } = props;
 
   return (
-    <div>
+    <>
       <div className={styles.backButton} data-tid="backButton">
         <Link to={routes.HOME}>
           <FontAwesomeIcon icon="arrow-left" size="3x" />
@@ -65,6 +65,6 @@ export default function Counter(props: Props) {
           async
         </button>
       </div>
-    </div>
+    </>
   );
 }

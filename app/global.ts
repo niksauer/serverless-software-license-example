@@ -1,2 +1,2 @@
 import './assets/icons';
-import './assets/styles/index.scss';
+import './assets/styles/index.global.scss';
