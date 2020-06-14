@@ -5,7 +5,8 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faArrowLeft,
   faPlus,
-  faMinus
+  faMinus,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faUserCircle } from '@fortawesome/free-regular-svg-icons';
@@ -15,6 +16,7 @@ library.add(
   faArrowLeft,
   faPlus,
   faMinus,
+  faTimes,
 
   // Regular icons need to be namespaced 'far'
   // Use: <FontAwesomeIcon icon={['far', 'check-circle']} />

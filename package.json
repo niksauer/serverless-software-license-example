@@ -182,6 +182,7 @@
     "@babel/preset-react": "^7.10.1",
     "@babel/preset-typescript": "^7.10.1",
     "@babel/register": "^7.10.1",
+    "@types/classnames": "^2.2.10",
     "@types/enzyme": "^3.10.5",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/history": "^4.7.5",
@@ -252,6 +253,7 @@
     "stylelint": "^13.0.0",
     "stylelint-config-prettier": "^8.0.1",
     "stylelint-config-standard": "^19.0.0",
+    "stylelint-scss": "^3.17.2",
     "terser-webpack-plugin": "^2.3.2",
     "testcafe": "^1.8.0",
     "testcafe-browser-provider-electron": "^0.0.14",
@@ -272,6 +274,8 @@
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/react-fontawesome": "^0.1.10",
     "@hot-loader/react-dom": "^16.13.0",
+    "bootstrap": "^4.5.0",
+    "classnames": "^2.2.6",
     "core-js": "^3.6.5",
     "devtron": "^1.4.0",
     "electron-debug": "^3.0.1",
@@ -280,9 +284,11 @@
     "history": "^4.10.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-focus-on": "^3.4.1",
     "react-hot-loader": "^4.12.19",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
+    "serverless-software-license": "file:../serverless-software-license",
     "source-map-support": "^0.5.16"
   },
   "devEngines": {
@@ -316,7 +322,15 @@
     "extends": [
       "stylelint-config-standard",
       "stylelint-config-prettier"
-    ]
+    ],
+    "plugins": [
+      "stylelint-scss"
+    ],
+    "rules": {
+      "at-rule-no-unknown": null,
+      "scss/at-rule-no-unknown": true
+    },
+    "syntax": "scss"
   },
   "renovate": {
     "extends": [
