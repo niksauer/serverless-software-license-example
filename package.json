@@ -155,7 +155,8 @@
       "app/node_modules"
     ],
     "setupFiles": [
-      "./internals/scripts/CheckBuildsExist.js"
+      "./internals/scripts/CheckBuildsExist.js",
+      "./test/setupTests.ts"
     ]
   },
   "devDependencies": {

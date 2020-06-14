@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './Counter.scss';
-import routes from '../constants/routes.json';
+import routes from '../../../constants/routes.json';
 
 type Props = {
   increment: () => void;

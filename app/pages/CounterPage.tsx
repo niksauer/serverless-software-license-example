@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Counter from '../components/Counter';
+import Counter from '../components/common/Counter/Counter';
 
 const IncrementIfOdd = (counter: number, setCounter: Function) => {
   return () => (counter % 2 === 1 ? setCounter(counter + 1) : '');

@@ -108,7 +108,12 @@ export default merge.smart(baseConfig, {
             }
           },
           {
-            loader: 'sass-loader'
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                includePaths: [path.join(__dirname, '..', 'app/assets/styles')]
+              }
+            }
           }
         ]
       },
@@ -130,7 +135,12 @@ export default merge.smart(baseConfig, {
             }
           },
           {
-            loader: 'sass-loader'
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                includePaths: [path.join(__dirname, '..', 'app/assets/styles')]
+              }
+            }
           }
         ]
       },

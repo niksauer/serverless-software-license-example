@@ -86,7 +86,10 @@ export default merge.smart(baseConfig, {
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
+              sourceMap: true,
+              sassOptions: {
+                includePaths: [path.join(__dirname, '..', 'app/assets/styles')]
+              }
             }
           }
         ]
@@ -111,7 +114,10 @@ export default merge.smart(baseConfig, {
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: true
+              sourceMap: true,
+              sassOptions: {
+                includePaths: [path.join(__dirname, '..', 'app/assets/styles')]
+              }
             }
           }
         ]
