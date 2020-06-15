@@ -7137,7 +7137,7 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
 
-ethers@^5.0.0-beta.189:
+ethers@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.0.2.tgz#b7ccca12592c8f5f45e172c3c32fd13d77225048"
   integrity sha512-hAWTPQXvjFlrtnPLCnOOJJuqiqmJv820egPHpOwcWTIQxXRrcfZyse2692eaqsXMeYLNM2CRfYgEomBiBGvgjw==
@@ -13802,7 +13802,7 @@ serve-static@1.14.1:
   version "1.0.0"
   dependencies:
     "@openzeppelin/contracts" "^3.0.1"
-    ethers "^5.0.0-beta.189"
+    ethers "^5.0.2"
 
 set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"
