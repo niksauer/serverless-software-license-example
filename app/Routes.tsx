@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import routes from './constants/routes.json';
-import CounterPage from './pages/CounterPage';
+import CounterPage from './pages/CounterPage/CounterPage';
 import HomePage from './pages/HomePage/HomePage';
 
 const Routes: React.FC = () => {

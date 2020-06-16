@@ -1,0 +1,44 @@
+.counterPage {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+
+  .backButtonContainer {
+    a {
+      color: white;
+    }
+  }
+
+  .counter {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10rem;
+    font-weight: bold;
+    letter-spacing: -0.025em;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+
+    button {
+      flex-shrink: 0;
+      font-size: 1.6rem;
+      font-weight: bold;
+      background-color: #fff;
+      border-radius: 50%;
+      margin: 10px;
+      width: 100px;
+      height: 100px;
+      opacity: 0.7;
+      cursor: pointer;
+
+      &:hover {
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+    }
+  }
+}
