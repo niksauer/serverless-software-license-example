@@ -1,6 +1,6 @@
 import React, { useState, useContext, useCallback } from 'react';
 import Modal, { ModalContentStyle } from '../util/Modal/Modal';
-// import history from '../../history';
+import { history } from '../../global';
 
 interface ModalData {
   content: React.ReactNode;
@@ -51,7 +51,7 @@ const ModalProvider: React.FC = ({ children }) => {
     setModals([]);
   }, [setModals]);
 
-  // history.listen(() => flush());
+  history.listen(() => flush());
 
   return (
     <ModalContext.Provider value={{ stack: modals, push, pop, flush }}>

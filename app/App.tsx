@@ -1,6 +1,6 @@
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { Router } from 'react-router-dom';
 import { LicenseProvider } from './components/provider/LicenseProvider';
 import {
   ModalProvider,
@@ -8,6 +8,7 @@ import {
 } from './components/provider/ModalProvider';
 import ErrorBoundary from './components/util/ErrorBoundary';
 import Dashboard from './components/Dashboard';
+import { history } from './global';
 
 const Providers: React.FC = ({ children }) => {
   return (
@@ -22,7 +23,7 @@ const Providers: React.FC = ({ children }) => {
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
-      <Router>
+      <Router history={history}>
         <Providers>
           <Dashboard />
           <ModalRenderer />

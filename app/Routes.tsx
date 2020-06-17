@@ -9,6 +9,7 @@ const Routes: React.FC = () => {
     <Switch>
       <Route path={AppRoute.Counter} component={CounterPage} />
       <Route path={AppRoute.Purchase} />
+      <Route path={AppRoute.Restore} />
       <Route path={AppRoute.Home} component={HomePage} />
     </Switch>
   );

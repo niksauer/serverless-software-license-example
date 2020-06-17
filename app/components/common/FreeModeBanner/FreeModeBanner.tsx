@@ -21,7 +21,9 @@ const FreeModeBanner: React.FC = () => {
 
   return (
     <div className={styles.freeModeBanner}>
-      <div className={styles.tagline}>Free Mode</div>
+      <div className={styles.tagline}>
+        <Link to={AppRoute.Home}>Free Mode</Link>
+      </div>
       <button type="button" onClick={() => pushModal(<GoPremiumPopup />)}>
         Unlock
       </button>
