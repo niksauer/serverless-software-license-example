@@ -2,10 +2,12 @@ import React, { useState, useMemo, useEffect } from 'react';
 import {
   LicenseManager,
   LicenseRegistry,
-  ILicenseStorage,
-  LicenseManagerEvent
+  LicenseManagerEvent,
+  FileLicenseStorage
 } from 'serverless-software-license';
 import { ethers } from 'ethers';
+import { remote } from 'electron';
+import path from 'path';
 
 interface LicenseState {
   isValid: boolean;
@@ -30,7 +32,15 @@ export const LicenseProvider: React.FC = ({ children }) => {
       ),
     [provider]
   );
-  const storage = useMemo(() => ({} as ILicenseStorage), []);
+
+  const storagePath = useMemo(
+    () => path.join(remote.app.getPath('userData'), 'license.json'),
+    []
+  );
+  const storage = useMemo(() => new FileLicenseStorage(storagePath), [
+    storagePath
+  ]);
+
   const manager = useMemo(() => new LicenseManager(registry, storage), [
     registry,
     storage
@@ -48,7 +58,7 @@ export const LicenseProvider: React.FC = ({ children }) => {
   });
 
   return (
-    <LicenseContext.Provider value={{ isValid: false }}>
+    <LicenseContext.Provider value={{ isValid }}>
       {children}
     </LicenseContext.Provider>
   );
