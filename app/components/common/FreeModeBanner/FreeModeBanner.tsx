@@ -1,6 +1,20 @@
 import React from 'react';
-import styles from './FreeModeBanner.scss';
+import { Link } from 'react-router-dom';
 import { useModal } from '../../provider/ModalProvider';
+import styles from './FreeModeBanner.scss';
+import AppRoute from '../../../constants/AppRoute';
+
+const GoPremiumPopup: React.FC = () => {
+  return (
+    <div>
+      <h2>Ready to go Premium?</h2>
+      <span>
+        You can either <Link to={AppRoute.Purchase}>purchase</Link> a new
+        license or <Link to={AppRoute.Restore}>restore</Link> a previous.
+      </span>
+    </div>
+  );
+};
 
 const FreeModeBanner: React.FC = () => {
   const { push: pushModal } = useModal();
@@ -8,19 +22,7 @@ const FreeModeBanner: React.FC = () => {
   return (
     <div className={styles.freeModeBanner}>
       <div className={styles.tagline}>Free Mode</div>
-      <button
-        type="button"
-        onClick={() =>
-          pushModal(
-            <div>
-              <h2>Ready to go Premium?</h2>
-              <span>
-                You can either purchase a new license or restore a previous.
-              </span>
-            </div>
-          )
-        }
-      >
+      <button type="button" onClick={() => pushModal(<GoPremiumPopup />)}>
         Unlock
       </button>
     </div>

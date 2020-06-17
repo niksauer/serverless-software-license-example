@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import routes from '../../constants/routes.json';
 import styles from './CounterPage.scss';
+import AppRoute from '../../constants/AppRoute';
 
 export default function CounterPage() {
   const [counter, setCounter] = useState(0);
@@ -25,7 +25,7 @@ export default function CounterPage() {
   return (
     <div className={styles.counterPage}>
       <div className={styles.backButtonContainer}>
-        <Link to={routes.HOME}>
+        <Link to={AppRoute.Home}>
           <FontAwesomeIcon icon="arrow-left" size="3x" />
         </Link>
       </div>

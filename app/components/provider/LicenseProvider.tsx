@@ -52,7 +52,7 @@ export const LicenseProvider: React.FC = ({ children }) => {
       }
     );
 
-    // manager.checkValidity();
+    manager.checkValidity().catch(() => {});
   });
 
   return (
