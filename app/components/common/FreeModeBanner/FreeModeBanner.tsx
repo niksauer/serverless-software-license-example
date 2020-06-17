@@ -21,7 +21,7 @@ const FreeModeBanner: React.FC = () => {
           )
         }
       >
-        Purchase
+        Unlock
       </button>
     </div>
   );

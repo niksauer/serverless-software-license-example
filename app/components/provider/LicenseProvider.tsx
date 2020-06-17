@@ -8,6 +8,7 @@ import {
 import { ethers } from 'ethers';
 import { remote } from 'electron';
 import path from 'path';
+import { RPC_HOST, CONTRACT_ADDRESS } from '../../environment';
 
 interface LicenseState {
   isValid: boolean;
@@ -21,18 +22,15 @@ export const LicenseProvider: React.FC = ({ children }) => {
   const [isValid, setIsValid] = useState(false);
 
   const provider = useMemo(
-    () => new ethers.providers.JsonRpcProvider('http://localhost:8545'),
+    () => new ethers.providers.JsonRpcProvider(RPC_HOST),
     []
   );
   const registry = useMemo(
-    () =>
-      new LicenseRegistry(
-        '0x0585cCdc5dFA71264C509ef687Ae4E814BA9Cd7E',
-        provider
-      ),
+    () => new LicenseRegistry(CONTRACT_ADDRESS, provider),
     [provider]
   );
 
+  // https://www.electronjs.org/docs/api/app
   const storagePath = useMemo(
     () => path.join(remote.app.getPath('userData'), 'license.json'),
     []
