@@ -14,17 +14,22 @@ assert(RPC_HOST !== undefined, 'RPC_HOST env required');
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS!;
 assert(CONTRACT_ADDRESS !== undefined, 'CONTRACT_ADDRESS env required');
 
-const USE_SIGNER_INTERNAL = process.env.USE_SIGNER!;
-assert(USE_SIGNER_INTERNAL !== undefined, 'USE_SIGNER env required');
+const USE_CONFIG_SIGNER_INTERNAL = process.env.USE_CONFIG_SIGNER!;
+assert(
+  USE_CONFIG_SIGNER_INTERNAL !== undefined,
+  'USE_CONFIG_SIGNER env required'
+);
 
-const USE_SIGNER = USE_SIGNER_INTERNAL === 'true';
+const USE_CONFIG_SIGNER = USE_CONFIG_SIGNER_INTERNAL === 'true';
+
+const ALLOW_SIGNER_INTERNAL = process.env.ALLOW_SIGNER!;
+assert(ALLOW_SIGNER_INTERNAL !== undefined, 'ALLOW_SIGNER env required');
+
+const ALLOW_SIGNER = ALLOW_SIGNER_INTERNAL === 'true';
 
 // eslint-disable-next-line prefer-destructuring
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
-
-if (USE_SIGNER) {
-  assert(PRIVATE_KEY !== undefined, 'PRIVATE_KEY env required');
-}
+const PRIVATE_KEY = process.env.PRIVATE_KEY!;
+assert(PRIVATE_KEY !== undefined, 'PRIVATE_KEY env required');
 
 const MNEMONIC = process.env.MNEMONIC!;
 assert(MNEMONIC !== undefined, 'MNEMONIC env required');
@@ -37,12 +42,19 @@ assert(
 
 const USE_TEST_ENVIRONMENT = USE_TEST_ENV_INTERNAL === 'true';
 
+const DIRECT_PURCHASE_INTERNAL = process.env.DIRECT_PURCHASE!;
+assert(DIRECT_PURCHASE_INTERNAL !== undefined, 'DIRECT_PURCHASE env required');
+
+const DIRECT_PURCHASE = DIRECT_PURCHASE_INTERNAL === 'true';
+
 export {
   LICENSE_PATH,
   RPC_HOST,
   CONTRACT_ADDRESS,
   PRIVATE_KEY,
-  USE_SIGNER,
+  ALLOW_SIGNER,
+  USE_CONFIG_SIGNER,
   MNEMONIC,
-  USE_TEST_ENVIRONMENT
+  USE_TEST_ENVIRONMENT,
+  DIRECT_PURCHASE
 };

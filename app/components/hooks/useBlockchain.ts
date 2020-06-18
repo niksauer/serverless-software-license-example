@@ -7,10 +7,11 @@ import {
 import {
   RPC_HOST,
   PRIVATE_KEY,
-  USE_SIGNER,
   MNEMONIC,
   USE_TEST_ENVIRONMENT,
-  CONTRACT_ADDRESS
+  CONTRACT_ADDRESS,
+  ALLOW_SIGNER,
+  USE_CONFIG_SIGNER
 } from '../../config';
 
 interface BlockchainContext {
@@ -23,22 +24,13 @@ interface BlockchainContext {
 let testEnvironment: Promise<TestEnvironment>;
 
 if (USE_TEST_ENVIRONMENT) {
-  testEnvironment = setupTestEnvironment(MNEMONIC);
+  testEnvironment = setupTestEnvironment({
+    mnemonic: MNEMONIC,
+    gasLimit: Number.MAX_SAFE_INTEGER
+  });
 }
 
 export default function useBlockchain(): BlockchainContext {
-  // const provider = useMemo(
-  //   () => new ethers.providers.JsonRpcProvider(RPC_HOST),
-  //   []
-  // );
-  // const signer = useMemo(() => {
-  // if (!PRIVATE_KEY || !USE_SIGNER) {
-  //   return undefined;
-  // }
-
-  // return new ethers.Wallet(PRIVATE_KEY).connect(provider);
-  // }, [provider]);
-
   const [isReady, setIsReady] = useState(false);
 
   const [provider, setProvider] = useState<ethers.providers.Provider>(
@@ -53,23 +45,26 @@ export default function useBlockchain(): BlockchainContext {
         .then(environment => {
           setProvider(environment.provider);
 
-          if (USE_SIGNER) {
-            setSigner(environment.getSigner(environment.deployerAddress));
+          if (ALLOW_SIGNER) {
+            if (USE_CONFIG_SIGNER) {
+              setSigner(
+                new ethers.Wallet(PRIVATE_KEY).connect(environment.provider)
+              );
+            } else {
+              setSigner(environment.getSigner(environment.deployerAddress));
+            }
           }
 
           setContractAddress(environment.contractAddress);
-          setIsReady(true);
 
-          console.log('Deployer address', environment.deployerAddress);
+          setIsReady(true);
         })
-        .catch(() => {
-          console.log('Failed to setup test environment');
-        });
+        .catch(() => {});
     } else {
       const newProvider = new ethers.providers.JsonRpcProvider(RPC_HOST);
       setProvider(newProvider);
 
-      if (PRIVATE_KEY && USE_SIGNER) {
+      if (ALLOW_SIGNER) {
         setSigner(new ethers.Wallet(PRIVATE_KEY).connect(newProvider));
       }
 
@@ -78,6 +73,10 @@ export default function useBlockchain(): BlockchainContext {
       setIsReady(true);
     }
   }, []);
+
+  useEffect(() => {
+    signer?.getAddress().then(address => console.log(address));
+  }, [signer]);
 
   return {
     isReady,

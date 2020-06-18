@@ -10,8 +10,8 @@ import AppRoute from '../../constants/AppRoute';
 import { useLicense } from '../../components/provider/LicenseProvider';
 import styles from './PurchaseLicensePage.scss';
 import useBlockchain from '../../components/hooks/useBlockchain';
-import { USE_SIGNER } from '../../config';
 import LoadingSpinner from '../../components/common/LoadingSpinner/LoadingSpinner';
+import { ALLOW_SIGNER, DIRECT_PURCHASE } from '../../config';
 
 type LocationState = {
   previousPage?: string;
@@ -93,7 +93,6 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
           setIsAwaitingTransation(false);
           setTransactionConfirmed(true);
 
-          console.log('confirmed');
           // TODO: store in manager
         }
       }
@@ -111,35 +110,48 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
       return;
     }
 
-    // signer
-    //   .populateTransaction(unsignedTransaction)
-    //   .then(() => {
-    //     signer
-    //       .signTransaction(unsignedTransaction)
-    //       .then(signedTx => {
-    //         setSignedTransaction(signedTx);
-    //       })
-    //       .catch(error => {
-    //         console.log('Error signing tx', error);
-    //       });
-    //   })
-    //   .catch(error => {
-    //     console.log('Error populating transaction', error);
-    //   });
+    if (DIRECT_PURCHASE) {
+      // signing transactions is not supported with default ganache signer
+      listenForConfirmation();
 
-    // signing transactions is not supported in test environment
-    // however, against docker ganache it throws an estimateGas error
-    // that's why the purchase is executed directly
-    listenForConfirmation();
+      registry
+        .purchaseLicense(address, customLicensePrice)
+        .then(tx => {
+          setPendingTransaction(tx);
+          setIsAwaitingTransation(true);
+        })
+        .catch(() => {
+          setTransactionRelayFailed(true);
+        });
 
-    registry
-      .purchaseLicense(address, customLicensePrice)
-      .then(tx => {
-        setPendingTransaction(tx);
-        setIsAwaitingTransation(true);
+      return;
+    }
+
+    signer
+      .populateTransaction(unsignedTransaction)
+      .then(() => {
+        signer
+          .getTransactionCount()
+          .then(nonce => {
+            // hot fix for ganache
+            unsignedTransaction.nonce = nonce;
+            unsignedTransaction.gasLimit = Number.MAX_SAFE_INTEGER - 10;
+
+            signer
+              .signTransaction(unsignedTransaction)
+              .then(signedTx => {
+                setSignedTransaction(signedTx);
+              })
+              .catch(error => {
+                console.log('Error signing tx', error);
+              });
+          })
+          .catch(error => {
+            console.log('Error getting transction count', error);
+          });
       })
-      .catch(() => {
-        setTransactionRelayFailed(true);
+      .catch(error => {
+        console.log('Error populating transaction', error);
       });
   }, [
     unsignedTransaction,
@@ -161,6 +173,7 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
         setIsAwaitingTransation(true);
       })
       .catch(error => {
+        console.log('Error relaying transaction', error);
         setTransactionRelayFailed(true);
       });
   }, [
@@ -283,7 +296,7 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
         >
           Relay Transaction
         </button>
-        {USE_SIGNER && signer && (
+        {ALLOW_SIGNER && signer && (
           <button type="button" onClick={onSign} className={styles.signButton}>
             Use Signer
           </button>
