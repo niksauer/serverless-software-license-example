@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import Routes from '../Routes';
 import { useLicense } from './provider/LicenseProvider';
 import StickyBanner from './util/StickyBanner/StickyBanner';
@@ -7,10 +8,16 @@ import styles from './Dashboard.scss';
 
 const Dashboard: React.FC = () => {
   const { isValid } = useLicense();
+  const location = useLocation();
+
+  const showFreeModeBanner = useMemo(
+    () => !isValid && !['/purchase', '/restore'].includes(location.pathname),
+    [isValid, location.pathname]
+  );
 
   return (
     <div className={styles.dashboard}>
-      {!isValid && (
+      {showFreeModeBanner && (
         <StickyBanner>
           <FreeModeBanner />
         </StickyBanner>

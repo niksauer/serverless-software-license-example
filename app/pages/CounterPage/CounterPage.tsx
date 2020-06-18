@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './CounterPage.scss';
 import AppRoute from '../../constants/AppRoute';
 
-export default function CounterPage() {
+const CounterPage: React.FC = () => {
   const [counter, setCounter] = useState(0);
 
   const decrement = useCallback(() => setCounter(counter - 1), [counter]);
@@ -46,4 +46,6 @@ export default function CounterPage() {
       </div>
     </div>
   );
-}
+};
+
+export default CounterPage;
