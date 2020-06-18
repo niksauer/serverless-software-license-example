@@ -14,7 +14,7 @@ const GoPremiumPopup: React.FC = () => {
         You can either{' '}
         <Link
           to={{
-            pathname: AppRoute.Purchase,
+            pathname: AppRoute.PurchaseLicense,
             state: { previousPage: location.pathname }
           }}
         >
@@ -23,7 +23,7 @@ const GoPremiumPopup: React.FC = () => {
         a new license or{' '}
         <Link
           to={{
-            pathname: AppRoute.Restore,
+            pathname: AppRoute.RestoreLicense,
             state: { previousPage: location.pathname }
           }}
         >

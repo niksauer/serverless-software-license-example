@@ -1,0 +1,28 @@
+.restoreLicensePage {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  color: white;
+
+  h2 {
+    margin-bottom: 30px;
+  }
+
+  .emoji {
+    font-size: 50px;
+  }
+
+  .addressInput {
+    height: 45px;
+    margin-bottom: 15px;
+  }
+
+  .challenge {
+    resize: none;
+    margin-bottom: 30px;
+  }
+
+  .response {
+    margin-bottom: 15px;
+  }
+}

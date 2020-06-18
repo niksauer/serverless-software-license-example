@@ -1,8 +1,8 @@
 enum AppRoute {
   Home = '/',
   Counter = '/counter',
-  Purchase = '/purchase',
-  Restore = '/restore'
+  PurchaseLicense = '/purchase',
+  RestoreLicense = '/restore'
 }
 
 export default AppRoute;
