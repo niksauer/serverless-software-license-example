@@ -1,6 +1,6 @@
 import './assets/icons';
 import './assets/styles/index.global.scss';
-import './environment';
+import './config';
 import { History, LocationState, createHashHistory } from 'history';
 
 // https://github.com/ReactTraining/history/blob/v4/docs/GettingStarted.md

@@ -2,9 +2,16 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { ethers, BigNumber } from 'ethers';
+import {
+  relayTransaction,
+  LicenseTokenEvent
+} from 'serverless-software-license';
 import AppRoute from '../../constants/AppRoute';
 import { useLicense } from '../../components/provider/LicenseProvider';
 import styles from './PurchaseLicensePage.scss';
+import useBlockchain from '../../components/hooks/useBlockchain';
+import { USE_SIGNER } from '../../config';
+import LoadingSpinner from '../../components/common/LoadingSpinner/LoadingSpinner';
 
 type LocationState = {
   previousPage?: string;
@@ -14,6 +21,7 @@ type Props = RouteComponentProps<{}, {}, LocationState>;
 
 const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
   const { registry } = useLicense();
+  const { provider, signer } = useBlockchain();
 
   const [licensePrice, setLicensePrice] = useState<BigNumber>(
     BigNumber.from(0)
@@ -34,33 +42,135 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
   const [licensePriceLookupFailed, setLicensePriceLookupFailed] = useState(
     false
   );
-
   const [showTransactionGenerator, setShowTransactionGenerator] = useState(
     false
   );
-  const [rawTransaction, setRawTransaction] = useState<
-    ethers.UnsignedTransaction
-  >();
-
-  const [showTransactionRelayer, setShowTransactionRelayer] = useState(false);
   const [
     transactionGenerationFailed,
     setTransactionGenerationFailed
   ] = useState(false);
+  const [showTransactionRelayer, setShowTransactionRelayer] = useState(false);
+  const [transactionRelayFailed, setTransactionRelayFailed] = useState(false);
+
+  const [unsignedTransaction, setUnsignedTransaction] = useState<
+    ethers.UnsignedTransaction
+  >();
+  const [signedTransaction, setSignedTransaction] = useState<string>('');
+  const [pendingTransaction, setPendingTransaction] = useState<
+    ethers.Transaction
+  >();
+  const [isAwaitingTransaction, setIsAwaitingTransation] = useState(false);
+  const [transactionConfirmed, setTransactionConfirmed] = useState(false);
 
   const onGenerate = useCallback(() => {
     registry
-      .generatePurchaseTransaction(address, customLicensePrice)
+      .generatePurchaseTransaction(address)
       .then(rawTx => {
-        setRawTransaction(rawTx);
+        setUnsignedTransaction(rawTx);
+        setShowTransactionGenerator(false);
         setShowTransactionRelayer(true);
-
-        return null;
       })
       .catch(() => {
         setTransactionGenerationFailed(true);
       });
-  }, [setShowTransactionRelayer]);
+  }, [
+    setShowTransactionRelayer,
+    address,
+    setShowTransactionGenerator,
+    setUnsignedTransaction,
+    setTransactionGenerationFailed,
+    registry
+  ]);
+
+  const listenForConfirmation = useCallback(() => {
+    registry.subscribe(
+      LicenseTokenEvent.LicensePurchased,
+      (newPurchaseAddress, event) => {
+        if (
+          newPurchaseAddress === address ||
+          event.transactionHash === pendingTransaction?.hash
+        ) {
+          setIsAwaitingTransation(false);
+          setTransactionConfirmed(true);
+
+          console.log('confirmed');
+          // TODO: store in manager
+        }
+      }
+    );
+  }, [
+    registry,
+    setIsAwaitingTransation,
+    pendingTransaction,
+    address,
+    setTransactionConfirmed
+  ]);
+
+  const onSign = useCallback(() => {
+    if (!unsignedTransaction || !signer) {
+      return;
+    }
+
+    // signer
+    //   .populateTransaction(unsignedTransaction)
+    //   .then(() => {
+    //     signer
+    //       .signTransaction(unsignedTransaction)
+    //       .then(signedTx => {
+    //         setSignedTransaction(signedTx);
+    //       })
+    //       .catch(error => {
+    //         console.log('Error signing tx', error);
+    //       });
+    //   })
+    //   .catch(error => {
+    //     console.log('Error populating transaction', error);
+    //   });
+
+    // signing transactions is not supported in test environment
+    // however, against docker ganache it throws an estimateGas error
+    // that's why the purchase is executed directly
+    listenForConfirmation();
+
+    registry
+      .purchaseLicense(address, customLicensePrice)
+      .then(tx => {
+        setPendingTransaction(tx);
+        setIsAwaitingTransation(true);
+      })
+      .catch(() => {
+        setTransactionRelayFailed(true);
+      });
+  }, [
+    unsignedTransaction,
+    signer,
+    registry,
+    listenForConfirmation,
+    setSignedTransaction,
+    setTransactionRelayFailed,
+    setIsAwaitingTransation,
+    setPendingTransaction
+  ]);
+
+  const onRelay = useCallback(() => {
+    listenForConfirmation();
+
+    relayTransaction(provider, signedTransaction)
+      .then(transaction => {
+        setPendingTransaction(transaction);
+        setIsAwaitingTransation(true);
+      })
+      .catch(error => {
+        setTransactionRelayFailed(true);
+      });
+  }, [
+    setTransactionRelayFailed,
+    setIsAwaitingTransation,
+    setPendingTransaction,
+    signedTransaction,
+    provider,
+    listenForConfirmation
+  ]);
 
   useEffect(() => {
     registry
@@ -68,13 +178,16 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
       .then(price => {
         setLicensePrice(price);
         setCustomLicensePrice(price);
-
-        return null;
       })
-      .catch(() => {
+      .catch(error => {
         setLicensePriceLookupFailed(true);
       });
-  }, []);
+  }, [
+    registry,
+    setLicensePrice,
+    setCustomLicensePrice,
+    setLicensePriceLookupFailed
+  ]);
 
   let element: React.ReactNode;
 
@@ -83,7 +196,7 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
       <>
         <span
           role="img"
-          aria-label="Failed Activation"
+          aria-label="Failed License Price Lookup"
           className={styles.emoji}
         >
           😐
@@ -122,8 +235,8 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
           className={styles.addressInput}
         />
         <p>
-          Click below to generate a contract transaction that you can sign and
-          relay from here afterwards.
+          A contract transaction with appropriate details will be generated that
+          you can sign and relay from here afterwards.
         </p>
         <button type="button" onClick={onGenerate}>
           Generate Transaction
@@ -135,7 +248,7 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
       <>
         <span
           role="img"
-          aria-label="Failed Activation"
+          aria-label="Failed Transaction Generation"
           className={styles.emoji}
         >
           😐
@@ -143,29 +256,71 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
         <p>Oops, something went wrong while generating the transaction...</p>
       </>
     );
-  } else if (showTransactionRelayer) {
+  } else if (
+    showTransactionRelayer &&
+    !transactionRelayFailed &&
+    !isAwaitingTransaction &&
+    !transactionConfirmed
+  ) {
     element = (
       <>
-        <p>
-          Please sign the following transaction.
-          {/* You can verify the details via  */}
-        </p>
-        {/* <textarea value={} readOnly className={styles.challenge} /> */}
-        {/* <p>...and input the result below:</p>
+        <p>Please sign the following transaction...</p>
         <textarea
-          value={response}
-          onChange={event => {
-            setResponse(event.target.value);
-          }}
-          className={styles.response}
+          value={unsignedTransaction?.data?.toString()}
+          readOnly
+          className={styles.transaction}
+        />
+        <p>...and input the result below:</p>
+        <textarea
+          value={signedTransaction}
+          onChange={event => setSignedTransaction(event.target.value)}
+          className={styles.transaction}
         />
         <button
           type="button"
-          onClick={() => completeActivation(response)}
-          disabled={response === ''}
+          onClick={onRelay}
+          disabled={signedTransaction === ''}
         >
-          Activate
-        </button> */}
+          Relay Transaction
+        </button>
+        {USE_SIGNER && signer && (
+          <button type="button" onClick={onSign} className={styles.signButton}>
+            Use Signer
+          </button>
+        )}
+      </>
+    );
+  } else if (transactionRelayFailed) {
+    element = (
+      <>
+        <span
+          role="img"
+          aria-label="Failed Transaction Relay"
+          className={styles.emoji}
+        >
+          😐
+        </span>
+        <p>Oops, something went wrong while relaying the transaction...</p>
+      </>
+    );
+  } else if (isAwaitingTransaction) {
+    element = (
+      <>
+        <LoadingSpinner />
+        <p>Waiting for transaction confirmation...</p>
+      </>
+    );
+  } else if (transactionConfirmed) {
+    element = (
+      <>
+        <span
+          role="img"
+          aria-label="Successful Activation"
+          className={styles.emoji}
+        >
+          🎉
+        </span>
+        <p>You&apos;re license was successfully activated.</p>
       </>
     );
   } else {

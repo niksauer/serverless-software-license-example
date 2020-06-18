@@ -53,8 +53,6 @@ const RestoreLicensePage: React.FC<Props> = ({ location }) => {
           // setChallenge(startActivation(address));
           setChallenge('0x034u0');
         }
-
-        return null;
       })
       .catch(() => {
         setIsCheckingRegistry(false);

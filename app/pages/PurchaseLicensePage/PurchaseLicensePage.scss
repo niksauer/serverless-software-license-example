@@ -4,6 +4,10 @@
   flex-direction: column;
   color: white;
 
+  h2 {
+    margin-bottom: 30px;
+  }
+
   .importantParagraph {
     font-size: 18px;
 
@@ -30,5 +34,14 @@
   .addressInput {
     height: 45px;
     margin-bottom: 15px;
+  }
+
+  .transaction {
+    resize: none;
+    margin-bottom: 15px;
+  }
+
+  .signButton {
+    margin-top: 5px;
   }
 }

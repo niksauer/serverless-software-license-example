@@ -3,14 +3,11 @@ import {
   LicenseManager,
   LicenseRegistry,
   // LicenseManagerEvent,
-  FileLicenseStorage,
   AddressOwnershipChallenge,
-  ILicenseRegistry
+  ILicenseRegistry,
+  ILicenseStorage
 } from 'serverless-software-license';
 import { ethers } from 'ethers';
-import { remote } from 'electron';
-import path from 'path';
-import { RPC_HOST, CONTRACT_ADDRESS } from '../../environment';
 import reducer, { LoadStatus, LoadActionType } from '../../utils/load-status';
 
 interface LicenseState {
@@ -41,7 +38,23 @@ const LicenseContext = React.createContext<
   stopActivation: () => null
 });
 
-export const LicenseProvider: React.FC = ({ children }) => {
+interface Props {
+  storage: ILicenseStorage;
+  provider: ethers.providers.Provider;
+  contractAdddress: string;
+  signer?: ethers.Signer;
+  connectSigner?: boolean;
+  children: React.ReactNode;
+}
+
+export const LicenseProvider: React.FC<Props> = ({
+  storage,
+  provider,
+  contractAdddress,
+  signer,
+  connectSigner = false,
+  children
+}) => {
   // MARK: - License
   const stateReducer = reducer<boolean, { isValid: boolean }>(
     (isValid: boolean) => {
@@ -54,23 +67,19 @@ export const LicenseProvider: React.FC = ({ children }) => {
     isValid: false
   });
 
-  const provider = useMemo(
-    () => new ethers.providers.JsonRpcProvider(RPC_HOST),
-    []
-  );
-  const registry = useMemo(
-    () => new LicenseRegistry(CONTRACT_ADDRESS, provider),
-    [provider]
-  );
+  const registry = useMemo(() => {
+    let providerOrSigner: ethers.providers.Provider | ethers.Signer = provider;
 
-  // https://www.electronjs.org/docs/api/app
-  const storagePath = useMemo(
-    () => path.join(remote.app.getPath('userData'), 'license.json'),
-    []
-  );
-  const storage = useMemo(() => new FileLicenseStorage(storagePath), [
-    storagePath
-  ]);
+    if (signer) {
+      if (connectSigner) {
+        providerOrSigner = signer.connect(provider);
+      } else {
+        providerOrSigner = signer;
+      }
+    }
+
+    return new LicenseRegistry(contractAdddress, providerOrSigner);
+  }, [provider]);
 
   const manager = useMemo(() => new LicenseManager(registry, storage), [
     registry,

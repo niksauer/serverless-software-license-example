@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { hot } from 'react-hot-loader/root';
 import { Router } from 'react-router-dom';
+import { FileLicenseStorage } from 'serverless-software-license';
 import { LicenseProvider } from './components/provider/LicenseProvider';
 import {
   ModalProvider,
@@ -9,11 +10,26 @@ import {
 import ErrorBoundary from './components/util/ErrorBoundary';
 import Dashboard from './components/Dashboard';
 import { history } from './global';
+import { LICENSE_PATH } from './config';
+import useBlockchain from './components/hooks/useBlockchain';
+import LoadingSpinner from './components/common/LoadingSpinner/LoadingSpinner';
 
 const Providers: React.FC = ({ children }) => {
+  const { isReady, provider, signer, contractAddress } = useBlockchain();
+  const storage = useMemo(() => new FileLicenseStorage(LICENSE_PATH), []);
+
+  if (!isReady) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <ModalProvider>
-      <LicenseProvider>
+      <LicenseProvider
+        storage={storage}
+        provider={provider}
+        contractAdddress={contractAddress}
+        signer={signer}
+      >
         <>{children}</>
       </LicenseProvider>
     </ModalProvider>
