@@ -3,4 +3,32 @@
   display: flex;
   flex-direction: column;
   color: white;
+
+  .importantParagraph {
+    font-size: 18px;
+
+    span {
+      text-transform: uppercase;
+      color: orange;
+    }
+  }
+
+  .priceContainer {
+    display: flex;
+    justify-content: center;
+
+    p {
+      font-size: 35px;
+      font-weight: bold;
+    }
+  }
+
+  .emoji {
+    font-size: 50px;
+  }
+
+  .addressInput {
+    height: 45px;
+    margin-bottom: 15px;
+  }
 }

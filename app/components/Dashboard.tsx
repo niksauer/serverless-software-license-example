@@ -5,13 +5,19 @@ import { useLicense } from './provider/LicenseProvider';
 import StickyBanner from './util/StickyBanner/StickyBanner';
 import FreeModeBanner from './common/FreeModeBanner/FreeModeBanner';
 import styles from './Dashboard.scss';
+import { LoadStatus } from '../utils/load-status';
 
 const Dashboard: React.FC = () => {
-  const { isValid } = useLicense();
+  const { isValid, status: licenseStatus } = useLicense();
   const location = useLocation();
 
+  const isLicenseValid = useMemo(
+    () => isValid && licenseStatus !== LoadStatus.Loading,
+    []
+  );
   const showFreeModeBanner = useMemo(
-    () => !isValid && !['/purchase', '/restore'].includes(location.pathname),
+    () =>
+      !isLicenseValid && !['/purchase', '/restore'].includes(location.pathname),
     [isValid, location.pathname]
   );
 

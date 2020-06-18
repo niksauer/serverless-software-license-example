@@ -15,12 +15,6 @@ type LocationState = {
 type Props = RouteComponentProps<{}, {}, LocationState>;
 
 const RestoreLicensePage: React.FC<Props> = ({ location }) => {
-  const [address, setAddress] = useState('');
-  const isValidAddress = useMemo(
-    () => address !== '' && ethers.utils.isAddress(address),
-    [address]
-  );
-
   const {
     status: licenseStatus,
     activationStatus: licenseActivationStatus,
@@ -31,6 +25,12 @@ const RestoreLicensePage: React.FC<Props> = ({ location }) => {
     registry
   } = useLicense();
 
+  const [address, setAddress] = useState('');
+  const isValidAddress = useMemo(
+    () => address !== '' && ethers.utils.isAddress(address),
+    [address]
+  );
+
   const [isCheckingRegistry, setIsCheckingRegistry] = useState(false);
   const [completedRegistryLookup, setCompletedRegistryLookup] = useState(false);
   const [registryLookupFailed, setRegistryLookupFailed] = useState(false);
@@ -39,7 +39,7 @@ const RestoreLicensePage: React.FC<Props> = ({ location }) => {
   const [challenge, setChallenge] = useState('');
   const [response, setResponse] = useState('');
 
-  const start = useCallback(() => {
+  const onNext = useCallback(() => {
     setIsCheckingRegistry(true);
 
     registry
@@ -71,7 +71,7 @@ const RestoreLicensePage: React.FC<Props> = ({ location }) => {
 
   let element: React.ReactNode;
 
-  if (licenseStatus !== LoadStatus.Error && isLicenseValid) {
+  if (licenseStatus !== LoadStatus.Loading && isLicenseValid) {
     element = (
       <>
         <span
@@ -176,7 +176,7 @@ const RestoreLicensePage: React.FC<Props> = ({ location }) => {
           }}
           className={styles.addressInput}
         />
-        <button type="button" disabled={!isValidAddress} onClick={start}>
+        <button type="button" disabled={!isValidAddress} onClick={onNext}>
           Next
         </button>
       </>
