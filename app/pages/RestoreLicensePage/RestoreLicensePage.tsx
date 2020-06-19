@@ -2,11 +2,14 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ethers } from 'ethers';
+import TextareaAutosize from 'react-textarea-autosize';
 import AppRoute from '../../constants/AppRoute';
 import { useLicense } from '../../components/provider/LicenseProvider';
 import { LoadStatus } from '../../utils/load-status';
 import LoadingSpinner from '../../components/common/LoadingSpinner/LoadingSpinner';
 import styles from './RestoreLicensePage.scss';
+import { ALLOW_SIGNER } from '../../config';
+import useBlockchain from '../../components/hooks/useBlockchain';
 
 type LocationState = {
   previousPage?: string;
@@ -15,6 +18,7 @@ type LocationState = {
 type Props = RouteComponentProps<{}, {}, LocationState>;
 
 const RestoreLicensePage: React.FC<Props> = ({ location }) => {
+  const { signer } = useBlockchain();
   const {
     status: licenseStatus,
     activationStatus: licenseActivationStatus,
@@ -59,6 +63,19 @@ const RestoreLicensePage: React.FC<Props> = ({ location }) => {
         setRegistryLookupFailed(true);
       });
   }, [address]);
+
+  const onSign = useCallback(() => {
+    if (!signer) {
+      return;
+    }
+
+    signer
+      ?.signMessage(challenge)
+      .then(signedChallenge => {
+        setResponse(signedChallenge);
+      })
+      .catch(error => console.log('Error signing challenge', error));
+  }, [signer, setResponse, challenge]);
 
   useEffect(() => {
     // unmount hook
@@ -144,9 +161,13 @@ const RestoreLicensePage: React.FC<Props> = ({ location }) => {
           To verify that you&apos;re the owner of this address, please sign the
           following data...
         </p>
-        <textarea value={challenge} readOnly className={styles.challenge} />
+        <TextareaAutosize
+          value={challenge}
+          readOnly
+          className={styles.challenge}
+        />
         <p>...and input the result below:</p>
-        <textarea
+        <TextareaAutosize
           value={response}
           onChange={event => {
             setResponse(event.target.value);
@@ -155,11 +176,18 @@ const RestoreLicensePage: React.FC<Props> = ({ location }) => {
         />
         <button
           type="button"
-          onClick={() => completeActivation(response)}
+          onClick={() => {
+            completeActivation(response);
+          }}
           disabled={response === ''}
         >
           Activate
         </button>
+        {ALLOW_SIGNER && signer && (
+          <button type="button" onClick={onSign} className={styles.signButton}>
+            Use Signer
+          </button>
+        )}
       </>
     );
   } else {

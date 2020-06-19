@@ -10,7 +10,7 @@ import {
 import ErrorBoundary from './components/util/ErrorBoundary';
 import Dashboard from './components/Dashboard';
 import { history } from './global';
-import { LICENSE_PATH } from './config';
+import { LICENSE_PATH, DIRECT_PURCHASE } from './config';
 import useBlockchain from './components/hooks/useBlockchain';
 import LoadingSpinner from './components/common/LoadingSpinner/LoadingSpinner';
 
@@ -28,7 +28,7 @@ const Providers: React.FC = ({ children }) => {
         storage={storage}
         provider={provider}
         contractAdddress={contractAddress}
-        signer={signer}
+        signer={DIRECT_PURCHASE ? signer : undefined}
       >
         <>{children}</>
       </LicenseProvider>

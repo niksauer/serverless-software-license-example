@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { ethers, BigNumber } from 'ethers';
+import TextareaAutosize from 'react-textarea-autosize';
 import {
   relayTransaction,
   LicenseTokenEvent
@@ -11,7 +12,7 @@ import { useLicense } from '../../components/provider/LicenseProvider';
 import styles from './PurchaseLicensePage.scss';
 import useBlockchain from '../../components/hooks/useBlockchain';
 import LoadingSpinner from '../../components/common/LoadingSpinner/LoadingSpinner';
-import { ALLOW_SIGNER, DIRECT_PURCHASE } from '../../config';
+import { ALLOW_SIGNER } from '../../config';
 
 type LocationState = {
   previousPage?: string;
@@ -20,7 +21,7 @@ type LocationState = {
 type Props = RouteComponentProps<{}, {}, LocationState>;
 
 const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
-  const { registry } = useLicense();
+  const { registry: licenseRegistry, activate: activateLicense } = useLicense();
   const { provider, signer } = useBlockchain();
 
   const [licensePrice, setLicensePrice] = useState<BigNumber>(
@@ -63,10 +64,10 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
   const [transactionConfirmed, setTransactionConfirmed] = useState(false);
 
   const onGenerate = useCallback(() => {
-    registry
+    licenseRegistry
       .generatePurchaseTransaction(address)
-      .then(rawTx => {
-        setUnsignedTransaction(rawTx);
+      .then(newUnsignedTransaction => {
+        setUnsignedTransaction(newUnsignedTransaction);
         setShowTransactionGenerator(false);
         setShowTransactionRelayer(true);
       })
@@ -79,11 +80,11 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
     setShowTransactionGenerator,
     setUnsignedTransaction,
     setTransactionGenerationFailed,
-    registry
+    licenseRegistry
   ]);
 
   const listenForConfirmation = useCallback(() => {
-    registry.subscribe(
+    licenseRegistry.subscribe(
       LicenseTokenEvent.LicensePurchased,
       (newPurchaseAddress, event) => {
         if (
@@ -98,11 +99,12 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
       }
     );
   }, [
-    registry,
-    setIsAwaitingTransation,
+    licenseRegistry,
     pendingTransaction,
     address,
-    setTransactionConfirmed
+    setTransactionConfirmed,
+    unsignedTransaction,
+    signedTransaction
   ]);
 
   const onSign = useCallback(() => {
@@ -110,22 +112,22 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
       return;
     }
 
-    if (DIRECT_PURCHASE) {
-      // signing transactions is not supported with default ganache signer
-      listenForConfirmation();
+    // if (DIRECT_PURCHASE) {
+    //   // signing transactions is not supported with default ganache signer
+    //   listenForConfirmation();
 
-      registry
-        .purchaseLicense(address, customLicensePrice)
-        .then(tx => {
-          setPendingTransaction(tx);
-          setIsAwaitingTransation(true);
-        })
-        .catch(() => {
-          setTransactionRelayFailed(true);
-        });
+    //   licenseRegistry
+    //     .purchaseLicense(address, customLicensePrice)
+    //     .then(transaction => {
+    //       setPendingTransaction(transaction);
+    //       setIsAwaitingTransation(true);
+    //     })
+    //     .catch(() => {
+    //       setTransactionRelayFailed(true);
+    //     });
 
-      return;
-    }
+    //   return;
+    // }
 
     signer
       .populateTransaction(unsignedTransaction)
@@ -139,11 +141,11 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
 
             signer
               .signTransaction(unsignedTransaction)
-              .then(signedTx => {
-                setSignedTransaction(signedTx);
+              .then(newSignedTransaction => {
+                setSignedTransaction(newSignedTransaction);
               })
               .catch(error => {
-                console.log('Error signing tx', error);
+                console.log('Error signing transaction', error);
               });
           })
           .catch(error => {
@@ -156,12 +158,13 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
   }, [
     unsignedTransaction,
     signer,
-    registry,
-    listenForConfirmation,
-    setSignedTransaction,
-    setTransactionRelayFailed,
-    setIsAwaitingTransation,
-    setPendingTransaction
+    setSignedTransaction
+    // licenseRegistry,
+    // listenForConfirmation,
+    // setTransactionRelayFailed,
+    // setIsAwaitingTransation,
+    // setPendingTransaction,
+    // signedTransaction
   ]);
 
   const onRelay = useCallback(() => {
@@ -186,17 +189,17 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
   ]);
 
   useEffect(() => {
-    registry
+    licenseRegistry
       .licensePrice()
       .then(price => {
         setLicensePrice(price);
         setCustomLicensePrice(price);
       })
-      .catch(error => {
+      .catch(() => {
         setLicensePriceLookupFailed(true);
       });
   }, [
-    registry,
+    licenseRegistry,
     setLicensePrice,
     setCustomLicensePrice,
     setLicensePriceLookupFailed
@@ -249,7 +252,7 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
         />
         <p>
           A contract transaction with appropriate details will be generated that
-          you can sign and relay from here afterwards.
+          you can populate, sign and relay from here afterwards.
         </p>
         <button type="button" onClick={onGenerate}>
           Generate Transaction
@@ -278,13 +281,13 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
     element = (
       <>
         <p>Please sign the following transaction...</p>
-        <textarea
+        <TextareaAutosize
           value={unsignedTransaction?.data?.toString()}
           readOnly
           className={styles.transaction}
         />
         <p>...and input the result below:</p>
-        <textarea
+        <TextareaAutosize
           value={signedTransaction}
           onChange={event => setSignedTransaction(event.target.value)}
           className={styles.transaction}
