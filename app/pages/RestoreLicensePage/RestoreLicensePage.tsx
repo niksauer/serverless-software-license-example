@@ -181,7 +181,7 @@ const RestoreLicensePage: React.FC<Props> = ({ location }) => {
           }}
           disabled={response === ''}
         >
-          Activate
+          Activate License
         </button>
         {ALLOW_SIGNER && signer && (
           <button type="button" onClick={onSign} className={styles.signButton}>

@@ -40,7 +40,12 @@ const FreeModeBanner: React.FC = () => {
 
   return (
     <div className={styles.freeModeBanner}>
-      <div className={styles.tagline}>Free Mode</div>
+      <div className={styles.tagline}>
+        <span role="img" aria-label="Free Mode">
+          ⏱
+        </span>{' '}
+        Free Mode
+      </div>
       <button type="button" onClick={() => pushModal(<GoPremiumPopup />)}>
         Unlock
       </button>

@@ -40,6 +40,7 @@ export default function useBlockchain(): BlockchainContext {
   const [contractAddress, setContractAddress] = useState('');
 
   useEffect(() => {
+    // non-persistent
     if (USE_TEST_ENVIRONMENT) {
       testEnvironment
         .then(environment => {
