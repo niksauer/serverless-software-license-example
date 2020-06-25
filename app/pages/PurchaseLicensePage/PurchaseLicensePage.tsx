@@ -5,7 +5,8 @@ import { ethers, BigNumber } from 'ethers';
 import TextareaAutosize from 'react-textarea-autosize';
 import {
   relayTransaction,
-  LicenseTokenEvent
+  LicenseTokenEvent,
+  getRandomData
 } from 'serverless-software-license';
 import AppRoute from '../../constants/AppRoute';
 import { useLicense } from '../../components/provider/LicenseProvider';
@@ -226,7 +227,7 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
     listenForConfirmation(manualRelayHash);
   }, [setIsAwaitingTransation, listenForConfirmation]);
 
-  const challenge = useMemo(() => 'hello', []);
+  const challenge = useMemo(() => getRandomData(32), []);
   const [response, setResponse] = useState('');
 
   const onSignChallenge = useCallback(() => {
