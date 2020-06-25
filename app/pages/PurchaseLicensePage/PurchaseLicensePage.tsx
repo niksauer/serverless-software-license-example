@@ -30,7 +30,8 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
     registry: licenseRegistry,
     activate: activateLicense,
     status: licenseStatus,
-    activationStatus: licenseActivationStatus
+    activationStatus: licenseActivationStatus,
+    stopActivation
   } = useLicense();
   const { provider, signer } = useBlockchain();
 
@@ -264,6 +265,13 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
     transactionGenerationFailed
   ]);
 
+  useEffect(() => {
+    // unmount hook
+    return () => {
+      stopActivation();
+    };
+  }, []);
+
   let element: React.ReactNode;
 
   if (licenseStatus !== LoadStatus.Loading && isLicenseValid) {
@@ -287,6 +295,19 @@ const PurchaseLicensePage: React.FC<Props> = ({ location }) => {
       <>
         <LoadingSpinner />
         <p>You&apos;re license is being activated...</p>
+      </>
+    );
+  } else if (licenseActivationStatus === LoadStatus.Error) {
+    element = (
+      <>
+        <span
+          role="img"
+          aria-label="Failed Activation"
+          className={styles.emoji}
+        >
+          😐
+        </span>
+        <p>Sorry, you&apos;re license couldn&apos;t be activated.</p>
       </>
     );
   } else if (licensePriceLookupFailed) {
