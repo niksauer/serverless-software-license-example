@@ -237,7 +237,6 @@
     "eslint-plugin-testcafe": "^0.2.1",
     "fbjs-scripts": "^1.2.0",
     "file-loader": "^5.0.2",
-    "ganache-core": "^2.10.2",
     "husky": "^4.2.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^25.1.0",
@@ -294,7 +293,6 @@
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "react-textarea-autosize": "^8.0.1",
-    "serverless-software-license": "file:../serverless-software-license/serverless-software-license.tgz",
     "source-map-support": "^0.5.16"
   },
   "devEngines": {

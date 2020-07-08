@@ -64,7 +64,9 @@ const createWindow = async () => {
             nodeIntegration: true
           }
         : {
-            preload: path.join(__dirname, 'dist/renderer.prod.js')
+            preload: path.join(__dirname, 'dist/renderer.prod.js'),
+            // https://github.com/electron/electron/issues/5113
+            nodeIntegration: true
           }
   });
 
