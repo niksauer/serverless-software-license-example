@@ -2,6 +2,5 @@
 # yarn lockfile v1
 
 
-"serverless-software-license@file:../serverless-software-license/serverless-software-license.tgz":
+"serverless-software-license@file:../../serverless-software-license":
   version "1.0.0"
-  resolved "file:../serverless-software-license/serverless-software-license.tgz#eff69a1797fbf41d9e1545d7b893a0ec25c661ad"

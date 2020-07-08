@@ -15,6 +15,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "serverless-software-license": "file:../serverless-software-license/serverless-software-license.tgz"
+    "serverless-software-license": "file:../../serverless-software-license"
   }
 }
