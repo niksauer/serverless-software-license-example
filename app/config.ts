@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+import dotenv from 'dotenv-flow';
 import { remote } from 'electron';
 import path from 'path';
 import assert from './utils/assert';
